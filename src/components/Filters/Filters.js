@@ -1,36 +1,42 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import classes from './Filters.module.scss';
-import data from "../../data.json";
+// import data from "../../data.json";
 import { CustomSelect } from '../CustomSelect/CustomSelect';
+import { generateUniqueKeys } from '../../utils/utils'
+import ChartContext from '../../store/chart-context';
 
 
-
-/**
- * function to remove duplicated keys from duplicated array and return new unique keys
- * @param {*} array array of objects from raw sever data
- * @param {*} key key of array of objects 
- * @returns uniqueExtractedValues
- */
-
-function generateUniqueKeys(array, key) {
-    const arrayObjectsKeys = array.map(obj => obj[key])
-    const uniqueExtractedValues = [...new Set(arrayObjectsKeys)]
-    return uniqueExtractedValues
-}
-
-//pass retruned unduplicatd to select html
-const schoolOptions = generateUniqueKeys(data, 'school')
-const camplOptions = generateUniqueKeys(data, 'camp')
-const countryOptions = generateUniqueKeys(data, 'country')
 
 
 const Filters = () => {
+
+    const chartCtx = useContext(ChartContext)
+    const data = chartCtx.data
+
+    //pass retruned unduplicatd to select html
+    const schoolOptions = generateUniqueKeys(data, 'school')
+    const campOptions = generateUniqueKeys(data, 'camp')
+    const countryOptions = generateUniqueKeys(data, 'country')
+
+    // console.log(filteredSchool);
+    const schoolChangeHandler = (selectedSchool) => {
+        chartCtx.schoolChangeHandler(selectedSchool)
+    }
+
+    const campChangeHandler = (selectedCamp) => {
+        chartCtx.campChangeHandler(selectedCamp)
+    }
+
+    const countryChangeHandler = (selectedCountry) => {
+        chartCtx.countryChangeHandler(selectedCountry)
+    }
+
     return (
         <>
             <section className={classes['chart-filters']}>
-                <CustomSelect data={schoolOptions} />
-                <CustomSelect data={camplOptions} />
-                <CustomSelect data={countryOptions} />
+                <CustomSelect label='Select school' data={schoolOptions} onChangeFilter={schoolChangeHandler} />
+                <CustomSelect label='Select camp' data={campOptions} onChangeFilter={campChangeHandler} />
+                <CustomSelect  label='Select Country' data={countryOptions} onChangeFilter={countryChangeHandler} />
             </section>
         </>
     )
